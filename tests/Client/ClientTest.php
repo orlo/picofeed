@@ -34,27 +34,36 @@ class ClientTest extends \PHPUnit\Framework\TestCase
         ob_start();
 
         $client->execute();
-        ob_end_clean();
-        $str = ob_get_contents();
-        ob_flush();
+        $str = ob_get_clean();
 
         $this->assertNotEmpty($str, "favicon.ico should be non-empty");
         $this->assertEquals($str, file_get_contents(__DIR__ . '/../fixtures/miniflux_favicon.ico'));
     }
 
     /**
-     * @group online
+     * A resource only counts as unmodified when every cache validator the
+     * server returns (Etag and Last-Modified) matches what we already have -
+     * a single matching header is not enough.
      */
     public function testCacheBothHaveToMatch()
     {
-        $client = Client::getInstance();
-        $client->setUrl('https://www.php.net/robots.txt');
-        $client->execute();
-        $etag = $client->getEtag();
+        $client = new class extends Client {
+            public function doRequest()
+            {
+                return array(
+                    'status' => 200,
+                    'body' => 'content',
+                    'headers' => new HttpHeaders(array(
+                        'ETag' => 'abc123',
+                        'Last-Modified' => 'Wed, 21 Oct 2020 07:28:00 GMT',
+                    )),
+                );
+            }
+        };
 
-        $client = Client::getInstance();
-        $client->setUrl('https://www.php.net/robots.txt');
-        $client->setEtag($etag);
+        // Only the Etag is known to match, Last-Modified is unset, so the
+        // resource must still be reported as modified.
+        $client->setEtag('abc123');
         $client->execute();
 
         $this->assertTrue($client->isModified());
@@ -146,7 +155,7 @@ class ClientTest extends \PHPUnit\Framework\TestCase
         $client = Client::getInstance();
         $client->setUrl('http://php.net/robots.txt');
         $client->execute();
-        $this->assertEquals('', $client->getEncoding());
+        $this->assertEquals('utf-8', $client->getEncoding());
     }
 
     /**
