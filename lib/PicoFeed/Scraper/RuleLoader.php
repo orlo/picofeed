@@ -23,7 +23,7 @@ class RuleLoader extends Base
     {
         $hostname = parse_url($url, PHP_URL_HOST);
 
-        if ($hostname !== false) {
+        if (!empty($hostname)) {
             $files = $this->getRulesFileList($hostname);
 
             foreach ($this->getRulesFolders() as $folder) {
