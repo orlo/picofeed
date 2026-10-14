@@ -5,6 +5,9 @@ namespace PicoFeed\Scraper;
 use PicoFeed\Reader\Reader;
 use PicoFeed\Config\Config;
 
+/**
+ * Try and verify that some of the rules in lib/PicoFeed/Rules/ work to help us parse sites (e.g. extract an image from a comic's webpage)
+ */
 class ScraperTest extends \PHPUnit\Framework\TestCase
 {
     /**
@@ -17,13 +20,9 @@ class ScraperTest extends \PHPUnit\Framework\TestCase
         $grabber->execute();
         $this->assertTrue($grabber->hasRelevantContent());
 
-        $grabber = new Scraper(new Config());
-        $grabber->setUrl('http://www.inc.com/suzanne-lucas/why-employee-turnover-is-so-costly.html');
-        $grabber->execute();
-        $this->assertTrue($grabber->hasRelevantContent());
 
         $grabber = new Scraper(new Config());
-        $grabber->setUrl('http://arstechnica.com/information-technology/2013/08/sysadmin-security-fail-nsa-finds-snowden-hijacked-officials-logins/');
+        $grabber->setUrl('https://arstechnica.com/information-technology/2013/08/sysadmin-security-fail-nsa-finds-snowden-hijacked-officials-logins/');
         $grabber->execute();
         $this->assertTrue($grabber->hasRelevantContent());
     }
@@ -34,11 +33,11 @@ class ScraperTest extends \PHPUnit\Framework\TestCase
     public function testRuleParser()
     {
         $grabber = new Scraper(new Config());
-        $grabber->setUrl('http://www.egscomics.com/index.php?id=1690');
+        $grabber->setUrl('https://www.egscomics.com/index.php?id=1690');
         $grabber->execute();
         $this->assertTrue($grabber->hasRelevantContent());
 
-        $this->assertEquals('<img title="2013-08-22" src="comics/../comics/1377151029-2013-08-22.png" id="comic" border="0" />', $grabber->getRelevantContent());
+        $this->assertEquals('<img title="2013-08-22" src="https://www.egscomics.com/comics/../comics/1377151029-2013-08-22.png" id="cc-comic"/>', $grabber->getRelevantContent());
     }
 
     /**

@@ -675,7 +675,7 @@ abstract class Client
      */
     public function isRedirection($code)
     {
-        return $code == 301 || $code == 302 || $code == 303 || $code == 307;
+        return $code == 301 || $code == 302 || $code == 303 || $code == 307 || $code == 308;
     }
 
     public function parseExpiration(HttpHeaders $headers)

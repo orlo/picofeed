@@ -227,7 +227,7 @@ class ReaderTest extends \PHPUnit\Framework\TestCase
 
         $reader = new Reader();
         $client = $reader->discover('http://cabinporn.com/');
-        $this->assertEquals('https://cabinporn.com/rss', $client->getUrl());
+        $this->assertEquals('https://www.cabinporn.com/feed', $client->getUrl());
         $this->assertInstanceOf('PicoFeed\Parser\Rss20', $reader->getParser($client->getUrl(), $client->getContent(), $client->getEncoding()));
 
         $reader = new Reader();
